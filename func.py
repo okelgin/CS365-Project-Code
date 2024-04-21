@@ -20,10 +20,10 @@ def get_occurances(dataframe, axis):
 	return np.array(list(dict(sorted(res.items())).items()))
 
 def fourier_transform(dataframe, axis):								
-	t = np.arange(0, len(dataframe-1)) 								#the timescale in of the dataframe
-	data_t = dataframe[axis].to_numpy() 					  		#Array form of desired column in dataframe
+	t = np.arange(0, len(dataframe-1)) 							#the timescale in of the dataframe
+	data_t = dataframe[axis].to_numpy() 					  	#Array form of desired column in dataframe
 
-	N = len(t)										      		    #number of datapoints
+	N = len(t)										      		   #number of datapoints
 	fhat = np.fft.fft(data_t, N)							 		#fast fourier transform desired column data
 	PSD = fhat * np.conj(fhat) / N  								#multiplying fhat by its conjugate to get real frequency values
 	omega = (1/N)*np.arange(N)										#creating possible frequency values in the range of N
@@ -34,13 +34,15 @@ def fourier_transform(dataframe, axis):
 
 
 def filter(PSD, fhat, std_threshold):
-	freq_mean = PSD.mean()											#numpy method to find mean of freq data
-	freq_std = PSD.std()											#numpy method to find standard deviation
-	threshold = freq_mean + std_threshold*freq_std					#calculating noise threshold
-	indices = PSD > threshold 										#finding valid indeces in the power spectral density
+	freq_mean = np.log2(PSD).mean()								#numpy method to find mean of freq data
+	freq_std = np.log2(PSD).std()									#numpy method to find standard deviation
+	threshold = freq_mean + std_threshold*freq_std			#calculating noise threshold
+	indices = np.log2(PSD) > threshold 							#finding valid indeces in the power spectral density
 
+	fhat_filtered = fhat * indices
+	return np.fft.ifft(fhat_filtered)
 
-	fhat_filtered = fhat * indices									#zero all frequencies that are not in the threshold
-	return np.fft.ifft(fhat_filtered)								#inverse transform and return
+"""Note: values relating to the square root of the PSD are used for determining the threshold coefficient
+	since the PSD values do not represent the mean and std of the original fhat but its square"""
 
 
