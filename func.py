@@ -26,7 +26,7 @@ def fourier_transform(dataframe, axis):
 	N = len(t)										      		   #number of datapoints
 	fhat = np.fft.fft(data_t, N)							 		#fast fourier transform desired column data
 	PSD = fhat * np.conj(fhat) / N  								#multiplying fhat by its conjugate to get real frequency values
-	omega = (1/N)*np.arange(N)										#creating possible frequency values in the range of N
+	omega = np.fft.fftfreq(N)									   #creating possible frequency values in the range of N
 	return np.real(PSD), fhat, omega
 
 """Note: PSD has infinitesimal complex values due to errors caused by two's complement error 
@@ -40,9 +40,17 @@ def filter(PSD, fhat, std_threshold):
 	indices = np.log2(PSD) > threshold 							#finding valid indeces in the power spectral density
 
 	fhat_filtered = fhat * indices
-	return np.fft.ifft(fhat_filtered)
+	return fhat_filtered
 
 """Note: values relating to the square root of the PSD are used for determining the threshold coefficient
 	since the PSD values do not represent the mean and std of the original fhat but its square"""
 
-
+def ifft_t(fhat, omega, t):
+	cn = np.array([x for x in fhat if x!= 0]) / len(fhat)			 		
+	w = np.array([omega[i] for i in range(len(fhat)) if fhat[i] != 0])
+	#discard 0 frequencies to save time
+	
+	res = cn[0]
+	for i in range(1,len(w)):
+		res += cn[i]*np.exp(1j*2*np.pi*w[i]*t)				#This simply converts our coefficients into a fourier series
+	return res 

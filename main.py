@@ -3,9 +3,7 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt 
 import seaborn as sns
-from scipy.optimize import curve_fit
-from scipy.stats import kurtosis
-from scipy.stats import skew
+import scipy as sci
 
 sns.set_theme(style='darkgrid')
 
@@ -16,15 +14,14 @@ sunspots_filled = func.back_fill(sunspots_init, 'Number of Sunspots')
 #Obtaining statistics
 sunspot_mean = sunspots_filled['Number of Sunspots'].mean()
 sunspot_std =  sunspots_filled['Number of Sunspots'].std()
-sunspots_kurt = kurtosis(sunspots_filled['Number of Sunspots'], fisher=False)
-sunspots_skew = skew(sunspots_filled['Number of Sunspots'])
+sunspots_kurt = sci.stats.kurtosis(sunspots_filled['Number of Sunspots'], fisher=False)
+sunspots_skew = sci.stats.skew(sunspots_filled['Number of Sunspots'])
 occurances = func.get_occurances(sunspots_filled, 'Number of Sunspots')
 
 #Fourier transform and filtering
 PSD, fhat, omega = func.fourier_transform(sunspots_filled, 'Number of Sunspots')
-sunspots_filtered = func.filter(PSD, fhat, sunspots_kurt)
-
-
+fhat_filtered = func.filter(PSD, fhat, sunspots_kurt)
+sunspots_filtered = func.ifft_t(fhat_filtered, omega, np.arange(0, len(fhat_filtered)))
 
 #Plotting
 
@@ -47,14 +44,14 @@ sunspots_filtered = func.filter(PSD, fhat, sunspots_kurt)
 # plt.xlabel('Frequency (1/days)')
 # plt.show()
 
-plt.plot(omega, np.sqrt(PSD), color='b')
-plt.ylabel('Square Root PSD')
-plt.xlabel('Frequency (1/days)')
-plt.show()
-
-
-# f_plot = sns.relplot(data=sunspots_filled, x='Unnamed: 0', y='Number of Sunspots', kind='line')
-# f_plot.ax.set(xlabel='Time in Days Since First Datapoint', ylabel='Number of Sunspots')
-# plt.plot(range(len(sunspots_filtered)), sunspots_filtered, color='salmon', label='Filtered Number of Sunpots')
-# plt.legend()
+# plt.plot(omega, np.sqrt(PSD), color='b')
+# plt.ylabel('Square Root PSD')
+# plt.xlabel('Frequency (1/days)')
 # plt.show()
+
+
+f_plot = sns.relplot(data=sunspots_filled, x='Unnamed: 0', y='Number of Sunspots', kind='line')
+f_plot.ax.set(xlabel='Time in Days Since First Datapoint', ylabel='Number of Sunspots')
+plt.plot(range(len(sunspots_filtered)), sunspots_filtered, color='salmon', label='Filtered Number of Sunpots')
+plt.legend()
+plt.show()
