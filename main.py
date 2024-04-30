@@ -4,8 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import scipy as sci
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.graphics.tsaplots import plot_acf
 
 sns.set_theme(style='darkgrid')
 
