@@ -36,7 +36,7 @@ def fourier_transform(dataframe, axis):
 def filter(PSD, fhat, std_threshold):
 	freq_mean = np.log2(PSD).mean()								#numpy method to find mean of freq data
 	freq_std = np.log2(PSD).std()									#numpy method to find standard deviation
-	threshold = freq_mean + std_threshold*freq_std			#calculating noise threshold
+	threshold = freq_mean + std_threshold*freq_std 		   #calculating noise threshold
 	indices = np.log2(PSD) > threshold 							#finding valid indeces in the power spectral density
 
 	fhat_filtered = fhat * indices

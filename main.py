@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import scipy as sci
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.arima.model import ARIMA
 
 sns.set_theme(style='darkgrid')
 
@@ -23,7 +25,7 @@ PSD, fhat, omega = func.fourier_transform(sunspots_filled, 'Number of Sunspots')
 fhat_filtered = func.filter(PSD, fhat, sunspots_kurt)
 sunspots_filtered = func.ifft_t(fhat_filtered, omega, np.arange(0, len(fhat_filtered)))
 
-#Plotting
+#Plotting Commented in order to avoid overlapping images
 
 # init_plot = sns.relplot(data=sunspots_filled, x='Unnamed: 0', y='Number of Sunspots', kind='line')
 # init_plot.ax.set(xlabel='Time in Days Since First Datapoint', ylabel='Number of Sunspots')
@@ -50,8 +52,32 @@ sunspots_filtered = func.ifft_t(fhat_filtered, omega, np.arange(0, len(fhat_filt
 # plt.show()
 
 
-f_plot = sns.relplot(data=sunspots_filled, x='Unnamed: 0', y='Number of Sunspots', kind='line')
-f_plot.ax.set(xlabel='Time in Days Since First Datapoint', ylabel='Number of Sunspots')
-plt.plot(range(len(sunspots_filtered)), sunspots_filtered, color='salmon', label='Filtered Number of Sunpots')
-plt.legend()
-plt.show()
+# f_plot = sns.relplot(data=sunspots_filled, x='Unnamed: 0', y='Number of Sunspots', kind='line')
+# f_plot.ax.set(xlabel='Time in Days Since First Datapoint', ylabel='Number of Sunspots')
+# plt.plot(range(len(sunspots_filtered)), sunspots_filtered, color='salmon', label='Filtered Number of Sunpots')
+# plt.legend()
+# plt.show()
+
+# acf = plot_acf(sunspots_filled['Number of Sunspots'])
+# pacf = plot_pacf(sunspots_filled['Number of Sunspots'])
+
+
+# idx = np.argmax(fhat[1:])
+# w = omega[idx] 											
+# """Turns out to be 0.000257738951138121"""
+# t = np.arange(0, len(sunspots_filled), 1)
+# plt.plot(t, sunspots_filled["Number of Sunspots"], color = 'b', label='Original Data')
+# plt.plot(t, sunspots_filtered, color = 'salmon', label='Filtered Sunspots(t)')
+# plt.plot(t, 50 + 50*np.sin(w*t+12000), color = 'white', label='Most dominant oscillation')
+# plt.legend()
+# plt.show()
+
+
+# diff = sunspots_filled['Number of Sunspots'].to_numpy() - sunspots_filtered
+# acf = plot_acf(diff, label= 'Autocorrelation of Residual Difference', color= 'salmon')
+# # pacf = plot_pacf(diff)
+# # plt.plot(range(len(fhat)), diff, label= 'Difference of Filtered and Actual Data')
+# plt.legend()
+# plt.show()
+
+
